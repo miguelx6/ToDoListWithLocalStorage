@@ -58,5 +58,23 @@ if ('serviceWorker' in navigator) {
         console.error('Error al registrar el Service Worker:', error);
       });
     }
+    
+    function enviarDatosAlServidor(datos) {
+    const rsp = new XMLHttpRequest();
+    rsp.open('POST', 'guardar_en_sesion.php', true);
+    rsp.setRequestHeader('Content-Type', 'application/https://sistemas.cruzperez.com/ss/mcortes21/');
 
+        rsp.onreadystatechange = function (){
+            if(rsp.readyState === 4 && rsp.status === 200){
+                console.log('Datos enviados al servidor con éxito.');
+            }
+        };
+
+        rsp.send('dato=' + encodeURIComponent(datos));
+      }
+
+      enviarDatosAlServidor('Mi dato a enviar al servidor');
+      
+
+      
     
