@@ -1,22 +1,20 @@
 <?php
-$iniciar = session_start();
+// Inicia la sesión
+session_start();
 
 if (isset($_POST['dato'])) {
+    // Obtiene el dato enviado desde el formulario
     $dato = $_POST['dato'];
 
     // Almacena el dato en la sesión del servidor
-    $_SESSION['miDato'] = 'Nuevo Valor';
+    $_SESSION['miDato'] = $dato;
 
-    header("location: index.html");
-    exit;
-    
-return true;
+    var_dump($_SESSION);
 
-}else {
-    return false;
+    header("Location: index.html");
+    exit; 
 }
 
-//Al final de la sesion, puedes destruir la sesion 
-session_destroy();
 ?>
+
 

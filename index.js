@@ -37,6 +37,7 @@ function addTask() {
         tasks.push(taskInput.value.trim());
         getTasks();
         renderTasks();
+
         taskInput.value = "";
     }
 }
@@ -52,7 +53,7 @@ renderTasks();
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/ss/mcortes21/pwabuilder-sw.js') // Ruta al archivo del Service Worker
       .then(function(registration) {
-        console.log('Service Worker registrado con éxito:', registration);
+        console.log('Service Worker registrado con exito:', registration);
       })
       .catch(function(error) {
         console.error('Error al registrar el Service Worker:', error);
@@ -61,8 +62,8 @@ if ('serviceWorker' in navigator) {
     
     function enviarDatosAlServidor(datos) {
     const rsp = new XMLHttpRequest();
-    rsp.open('POST', 'guardar_en_sesion.php', true);
-    rsp.setRequestHeader('Content-Type', 'application/https://sistemas.cruzperez.com/ss/mcortes21/');
+    rsp.open('POST', 'guardarensesion.php', true);
+    rsp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
         rsp.onreadystatechange = function (){
             if(rsp.readyState === 4 && rsp.status === 200){
@@ -74,7 +75,4 @@ if ('serviceWorker' in navigator) {
       }
 
       enviarDatosAlServidor('Mi dato a enviar al servidor');
-      
-
-      
-    
+        

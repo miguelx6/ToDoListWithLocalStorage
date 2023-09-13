@@ -11,17 +11,17 @@ self.addEventListener("message", (event) => {
   }
 });
 
-// Precargue los recursos importantes aquí si es necesario
+
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE, revision: null }, // Reemplaza null con una revisión adecuada si es necesario
+  { url: OFFLINE_PAGE, revision: null }, 
 ]);
 
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE2, revision: null }, // Reemplaza null con una revisión adecuada si es necesario
+  { url: OFFLINE_PAGE2, revision: null }, 
 ]);
 
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE3, revision: null }, // Reemplaza null con una revisión adecuada si es necesario
+  { url: OFFLINE_PAGE3, revision: null }, 
 ]);
 
 if (workbox.navigationPreload.isSupported()) {
@@ -30,7 +30,8 @@ if (workbox.navigationPreload.isSupported()) {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
-    event.respondWith((async () => {
+    event.respondWith(
+      (async () => {
       try {
         const preloadResp = await event.preloadResponse;
 
@@ -54,7 +55,7 @@ self.addEventListener('fetch', (event) => {
         if (cachedResp) {
           return cachedResp;
         } else {
-          // Personaliza la respuesta en caso de que no se encuentre en caché ningún recurso
+          
           return new Response("No tienes conexión a Internet. Por favor, inténtalo de nuevo más tarde.", { status: 404, statusText: "Not Found" });
         }
       }
