@@ -1,5 +1,7 @@
 <?php
 // Inicia la sesión
+$handler = new Mysessionhandler();
+session_set_save_handler($handler; true);
 session_start();
 
 if (isset($_POST['dato'])) {

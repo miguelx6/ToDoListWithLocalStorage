@@ -75,4 +75,54 @@ if ('serviceWorker' in navigator) {
       }
 
       enviarDatosAlServidor('Mi dato a enviar al servidor');
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const taskForm = document.getElementById("taskForm");
+        const taskList = document.getElementById("taskList");
+        
+        // Función para cargar las tareas desde el servidor.
+        function loadTasks() {
+            fetch("/https://sistemas.cruzperez.com/ss/mcortes21/conexion.php") 
+                .then((response) => response.json())
+                .then((tasks) => {
+                    taskList.innerHTML = tasks;
+                    tasks.forEach((task) => {
+                        const listItem = document.createElement("li");
+                        listItem.textContent = task;
+                        taskList.appendChild(listItem);
+                    });
+                });
+        }
+        
+        // Manejar el envío del formulario para agregar tareas.
+        taskForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+            
+            const taskNameInput = document.getElementById("taskName");
+            const taskName = taskNameInput.value.trim();
+            
+            if (taskName === "") {
+                alert("Por favor, ingresa una tarea válida.");
+                return;
+            }
+            
+            fetch("/https://sistemas.cruzperez.com/ss/mcortes21/guardarensesion.php", { 
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ task_name: taskName })
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                alert(data.message);
+                taskNameInput.value = "";
+                loadTasks(); // Vuelve a cargar la lista de tareas después de agregar una nueva tarea.
+            });
+        });
+        
+        // Cargar las tareas al cargar la página.
+        loadTasks();
+    });
+    
         
