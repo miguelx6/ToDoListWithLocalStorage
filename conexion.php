@@ -1,7 +1,9 @@
 <?php
+// require_once 'Mysessionhandler.php';
+
 // Inicia la sesión
 $handler = new Mysessionhandler();
-session_set_save_handler($handler; true);
+session_set_save_handler($handler, true);
 session_start();
 
 if (isset($_POST['dato'])) {
@@ -13,10 +15,11 @@ if (isset($_POST['dato'])) {
 
     var_dump($_SESSION);
 
+    // Redirige al usuario de vuelta a index.html
     header("Location: index.html");
     exit; 
 }
-
 ?>
+
 
 

@@ -81,18 +81,20 @@ if ('serviceWorker' in navigator) {
         const taskList = document.getElementById("taskList");
         
         // Función para cargar las tareas desde el servidor.
-        function loadTasks() {
-            fetch("/https://sistemas.cruzperez.com/ss/mcortes21/conexion.php") 
-                .then((response) => response.json())
-                .then((tasks) => {
-                    taskList.innerHTML = tasks;
-                    tasks.forEach((task) => {
-                        const listItem = document.createElement("li");
-                        listItem.textContent = task;
-                        taskList.appendChild(listItem);
-                    });
-                });
-        }
+       // Función para cargar las tareas desde el servidor.
+function loadTasks() {
+    fetch("/ss/mcortes21/conexion.php")  // Corrige la URL de la solicitud fetch
+        .then((response) => response.json())
+        .then((tasks) => {
+            taskList.innerHTML = ""; // Limpia la lista actual de tareas
+            tasks.forEach((task) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = task;
+                taskList.appendChild(listItem);
+            });
+        });
+}
+
         
         // Manejar el envío del formulario para agregar tareas.
         taskForm.addEventListener("submit", function (e) {
