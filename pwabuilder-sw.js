@@ -27,13 +27,6 @@ workbox.precaching.precacheAndRoute([
   { url: OFFLINE_PAGE3, revision: null }, 
 ]);
 
-workbox.precaching.precacheAndRoute([
-  {url: OFFLINE_PAGE4, revision: null},
-]);
-
-workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE5, revision: null }, 
-]);
 
 if (workbox.navigationPreload.isSupported()) {
   workbox.navigationPreload.enable();
