@@ -1,5 +1,6 @@
 let taskList = document.getElementById("taskList");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let task = JSON.parse(sessionStorage.getItem("task")) || [];
 
 
 function renderTasks() {
@@ -108,7 +109,7 @@ function loadTasks() {
                 return;
             }
             
-            fetch("/https://sistemas.cruzperez.com/ss/mcortes21/guardarensesion.php", { 
+            fetch("/ss/mcortes21/guardarensesion.php", { 
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -126,5 +127,27 @@ function loadTasks() {
         // Cargar las tareas al cargar la página.
         loadTasks();
     });
+
+    function enviarDatosAlServidor(task) {
+        const formData = new FormData();
+        formData.append('task', task);
+    
+        fetch('/ss/mcortes21/guardarensesion.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data.message); // Debería imprimir "Tarea agregada correctamente"
+            // Aquí puedes realizar cualquier otra acción después de guardar los datos en la sesión.
+        })
+        .catch(error => {
+            console.error('Error al enviar datos:', error);
+        });
+    }
+    
+    // Luego, donde tengas el código para obtener el valor del formulario (taskInput), llama a esta función
+    // con el valor adecuado cuando el formulario se envíe.
+    
     
         

@@ -6,20 +6,22 @@ $handler = new Mysessionhandler();
 session_set_save_handler($handler, true);
 session_start();
 
-if (isset($_POST['dato'])) {
+if (isset($_POST['task'])) {
     // Obtiene el dato enviado desde el formulario
-    $dato = $_POST['dato'];
+    $dato = $_POST['task'];
+
+    // Validación y limpieza (ajusta según tus necesidades)
+    $dato = htmlspecialchars($task);
 
     // Almacena el dato en la sesión del servidor
-    $_SESSION['miDato'] = $dato;
+    $_SESSION['miDato'] = $task;
 
-    var_dump($_SESSION);
-
-    // Redirige al usuario de vuelta a index.html
+    // Redirige al usuario de vuelta a index.html (asegúrate de que index.html sea válido)
     header("Location: index.html");
     exit; 
 }
 ?>
+
 
 
 

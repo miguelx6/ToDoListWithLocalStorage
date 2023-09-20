@@ -1,21 +1,24 @@
 <?php
-header("Content-Type: application/json");
+// Inicia la sesión
+session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    // Endpoint para obtener todas las tareas almacenadas.
-    $tasks = []; // Recupera las tareas de la base de datos o de donde las almacenes.
-    echo json_encode($tasks);
-} elseif ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Endpoint para agregar una nueva tarea.
-    $data = json_decode(file_get_contents("php://input"), true);
-    
-    // Validar y guardar la tarea en la base de datos o en donde prefieras.
-    
-    echo json_encode(["message" => "Tarea agregada correctamente"]);
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['task'])) {
+    // Obtiene el dato enviado desde el formulario
+    $dato = $_POST['task'];
+
+    // Validación y limpieza (ajusta según tus necesidades)
+    $dato = htmlspecialchars($task);
+
+    // Almacena el dato en la sesión del servidor
+    $_SESSION['miDato'] = $task;
+
+    // Redirige al usuario de vuelta a index.html (asegúrate de que index.html sea válido)
+    header("Location: index.html");
+    exit;
 } else {
-    http_response_code(405); // Método no permitido
-    echo json_encode(["message" => "Método no permitido"]);
+    http_response_code(400); // Bad Request
+    echo json_encode(["message" => "Solicitud incorrecta"]);
+    exit;
 }
-
-session_set_save_handler($header, true);
 ?>
+
