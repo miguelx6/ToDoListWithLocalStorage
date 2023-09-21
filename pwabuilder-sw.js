@@ -16,15 +16,15 @@ self.addEventListener("message", (event) => {
 
 
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE, revision: null }, 
+  { url: OFFLINE_PAGE, revision: null },
 ]);
 
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE2, revision: null }, 
+  { url: OFFLINE_PAGE2, revision: null },
 ]);
 
 workbox.precaching.precacheAndRoute([
-  { url: OFFLINE_PAGE3, revision: null }, 
+  { url: OFFLINE_PAGE3, revision: null },
 ]);
 
 
@@ -45,34 +45,34 @@ self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') {
     event.respondWith(
       (async () => {
-      try {
-        const preloadResp = await event.preloadResponse;
+        try {
+          const preloadResp = await event.preloadResponse;
 
-        if (preloadResp) {
-          return preloadResp;
-        }
+          if (preloadResp) {
+            return preloadResp;
+          }
 
-        const networkResp = await fetch(event.request);
+          const networkResp = await fetch(event.request);
 
-        // Si la solicitud en línea es exitosa, actualiza la caché con la respuesta.
-        if (networkResp && networkResp.status === 200) {
+          // Si la solicitud en línea es exitosa, actualiza la caché con la respuesta.
+          if (networkResp && networkResp.status === 200) {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(event.request.url, networkResp.clone());
+          }
+
+          return networkResp;
+        } catch (error) {
           const cache = await caches.open(CACHE_NAME);
-          cache.put(event.request.url, networkResp.clone());
-        }
+          const cachedResp = await cache.match(event.request) || await cache.match(OFFLINE_PAGE);
 
-        return networkResp;
-      } catch (error) {
-        const cache = await caches.open(CACHE_NAME);
-        const cachedResp = await cache.match(event.request) || await cache.match(OFFLINE_PAGE);
+          if (cachedResp) {
+            return cachedResp;
+          } else {
 
-        if (cachedResp) {
-          return cachedResp;
-        } else {
-          
-          return new Response("No tienes conexión a Internet. Por favor, inténtalo de nuevo más tarde.", { status: 404, statusText: "Not Found" });
+            return new Response("No tienes conexión a Internet. Por favor, inténtalo de nuevo más tarde.", { status: 404, statusText: "Not Found" });
+          }
         }
-      }
-    })());
+      })());
   }
 });
 
