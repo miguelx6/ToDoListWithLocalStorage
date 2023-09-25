@@ -20,6 +20,8 @@ if (isset($_POST['dato'])) {
     header("Location: index.html");
     exit; 
 }
+
+session_destroy();
 ?>
 
 

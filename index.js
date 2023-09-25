@@ -59,8 +59,6 @@ if ('serviceWorker' in navigator) {
         });
 }
 
-let dato = document.getElementById("dato").value;
-
 sessionStorage.setItem("miDato", dato);
 
 let xhr = new XMLHttpRequest();
@@ -87,20 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             });
     }
-    /*
-    function loadTasks() {
-        fetch("/ss/mcortes21/conexion.php")
-            .then((response) => response.json())
-            .then((tasks) => {
-                taskList.innerHTML = ""; // Limpia la lista actual de tareas
-                tasks.forEach((task) => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = task;
-                    taskList.appendChild(listItem);
-                });
-            });
-    }
-    */
     // Manejar el envío del formulario para agregar tareas.
     taskForm.addEventListener("submit", function (e) {
         e.preventDefault();
