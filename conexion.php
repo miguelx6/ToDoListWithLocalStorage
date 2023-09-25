@@ -15,7 +15,7 @@ if (isset($_POST['dato'])) {
 
     // Almacena el dato en la sesión del servidor
     $_SESSION['miDato'] = $dato;
-
+    
     // Redirige al usuario de vuelta a index.html (asegúrate de que index.html sea válido)
     header("Location: index.html");
     exit; 

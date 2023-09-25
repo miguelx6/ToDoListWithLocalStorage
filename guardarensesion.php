@@ -12,6 +12,9 @@ $response = [
     'message' => 'Tareas transferidas de localStorage a sessionStorage',
 ];
 echo json_encode($response);
+
+// Redirige a la página principal
+header('Location: index.html');
 ?>
 
 

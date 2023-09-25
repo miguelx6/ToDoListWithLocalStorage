@@ -1,6 +1,7 @@
 let taskList = document.getElementById("taskList");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+
 function renderTasks() {
     taskList.innerHTML = "";
     tasks.forEach(function (taskText) {
@@ -59,10 +60,12 @@ if ('serviceWorker' in navigator) {
         });
 }
 
+//Guardar en la sesión
+var dato = sessionStorage.getItem("miDato");  // Obtener el dato de la sesión
 sessionStorage.setItem("miDato", dato);
 
 let xhr = new XMLHttpRequest();
-xhr.open("POST", "conexion.php", true);
+xhr.open("POST", "conexion.php", true);  
 xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded" );
 xhr.send("dato=" + dato);
 
@@ -74,13 +77,13 @@ document.addEventListener("DOMContentLoaded", function () {
     function loadTasks() {
         fetch("/ss/mcortes21/conexion.php", {
             credentials: "include"
-        })
+        })  
             .then((response) => response.json())
-            .then((tasks) => {
+            .then((tasks) =>{
                 taskList.innerHTML = ""; // Limpia la lista actual de tareas
                 tasks.forEach((task) => {
                     const listItem = document.createElement("li");
-                    listItem.textContent = task;
+                    listItem.textContent = task;  
                     taskList.appendChild(listItem);
                 });
             });
@@ -89,11 +92,13 @@ document.addEventListener("DOMContentLoaded", function () {
     taskForm.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        const taskNameInput = document.getElementById("taskName");
-        const taskName = taskNameInput.value.trim();
-
+        const taskNameInput = document.getElementById("taskInput");
+        // Obtener el nombre de la tarea del campo de entrada.
+        const taskName = taskNameInput.value;
+        
         if (taskName === "") {
-            alert("Por favor, ingresa una tarea válida.");
+            alert("Tu tarea a sido agregada con exito :) .");
+
             return;
         }
 
@@ -114,10 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cargar las tareas al cargar la página.
     loadTasks();
+
 });
-
-
-// Luego, donde tengas el código para obtener el valor del formulario (taskInput), llama a esta función
-// con el valor adecuado cuando el formulario se envíe.
 
 
