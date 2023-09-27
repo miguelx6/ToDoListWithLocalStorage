@@ -61,8 +61,9 @@ if ('serviceWorker' in navigator) {
 }
 
 //Guardar en la sesión
-var dato = sessionStorage.getItem("miDato");  // Obtener el dato de la sesión
-sessionStorage.setItem("miDato", dato);
+sessionStorage.setItem("task", dato);
+sessionStorage.getItem("task", dato = "task");
+let dato = localStorage.getItem("dato");  // Obtener el dato de la sesión
 
 let xhr = new XMLHttpRequest();
 xhr.open("POST", "conexion.php", true);  
