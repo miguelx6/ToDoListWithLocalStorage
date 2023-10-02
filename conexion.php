@@ -14,7 +14,7 @@ if (isset($_POST['dato'])) {
     $dato = htmlspecialchars($dato);
 
     // Almacena el dato en la sesión del servidor
-    $_SESSION['miDato'] = $dato;
+    $_SESSION['task'] = $dato;
     
     // Redirige al usuario de vuelta a index.html (asegúrate de que index.html sea válido)
     header("Location: index.html");

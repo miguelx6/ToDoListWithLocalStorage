@@ -1,5 +1,6 @@
 let taskList = document.getElementById("taskList");
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let task = JSON.parse(sessionStorage.getItem("tasks")) || [];
 
 
 function renderTasks() {
@@ -44,6 +45,7 @@ function addTask() {
 
 function getTasks() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
+    sessionStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
 let addButton = document.getElementById("addButton");
@@ -60,10 +62,13 @@ if ('serviceWorker' in navigator) {
         });
 }
 
+
 //Guardar en la sesión
-sessionStorage.setItem("task", dato);
-sessionStorage.getItem("task", dato = "task");
 let dato = localStorage.getItem("dato");  // Obtener el dato de la sesión
+sessionStorage.setItem("task", dato);
+sessionStorage.getItem("task", dato);
+
+
 
 let xhr = new XMLHttpRequest();
 xhr.open("POST", "conexion.php", true);  
@@ -122,5 +127,32 @@ document.addEventListener("DOMContentLoaded", function () {
     loadTasks();
 
 });
+
+const formularioTarea = document.getElementById("taskForm");
+formularioTarea.addEventListener("submit", function (event) { 
+    event.preventDefault();
+
+    const tarea = document.getElementById("taskInput").value;
+    const fecha = document.getElementById("fecha").value;
+
+    const newtask = { 
+        task: tarea,
+        fecha: fecha
+    };
+
+    fetch("https://sistemas.cruzperez.com/ss/mcortes21/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newtask)
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            alert(data.message);
+            formularioTarea.reset();
+    })
+        .catch((error) => console.error(error));
+    });
 
 
