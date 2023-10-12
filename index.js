@@ -155,4 +155,14 @@ formularioTarea.addEventListener("submit", function (event) {
         .catch((error) => console.error(error));
     });
 
+    // Función para transferir datos de localStorage a sessionStorage
+function transferData() {
+    const localStorageTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    sessionStorage.setItem("tasks", JSON.stringify(localStorageTasks));
+}
+
+// Llama a la función de transferencia cuando lo necesites, por ejemplo, al cargar la página.
+transferData();
+
+
 
