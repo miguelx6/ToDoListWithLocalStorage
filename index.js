@@ -164,5 +164,31 @@ function transferData() {
 // Llama a la función de transferencia cuando lo necesites, por ejemplo, al cargar la página.
 transferData();
 
+//FUNCION PARA INICIO DE SESION EN LA PWA CON AUTENTIFICACION de licencia desde el servidor
+const form = document.getElementById("form");
+const username = document.getElementById("username");
+const password = document.getElementById("password");
 
+form.addEventListener("submit", function (event) { 
+    event.preventDefault();
 
+    const newtask = { 
+        username: username.value,
+        password: password.value
+    };
+
+    fetch("https://sistemas.cruzperez.com/ss/mcortes21/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newtask)
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            alert(data.message);
+            form.reset();
+    })
+        .catch((error) => console.error(error));
+    }
+);
