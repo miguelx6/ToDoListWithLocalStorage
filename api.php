@@ -32,5 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
     saveData($data);
     echo json_encode($task);
+
+    // echo json_encode($_POST);
+
+    // $data = [
+    //     'name' => $_POST['name'],
+    //     'description' => $_POST['description'],
+    //     'status' => $_POST['status'],
+    // ];
+    // echo json_encode($data);
 }
 ?>
