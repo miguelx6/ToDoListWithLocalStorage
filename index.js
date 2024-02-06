@@ -5,25 +5,78 @@ let task = JSON.parse(sessionStorage.getItem("tasks")) || [];
 
 function renderTasks() {
     taskList.innerHTML = "";
-    tasks.forEach(function (taskText) {
+    tasks.forEach(function (taskText, index) {
         let listItem = document.createElement("li");
         listItem.innerText = taskText;
+
+        let buttonContainer = document.createElement("div");
+        buttonContainer.className = "buttonContainer";
+
+        let editButton = document.createElement("button");
+        editButton.innerText = "Editar";
+        editButton.className = "editButton";
+        editButton.onclick = function () {
+            startEditTask(index);
+        };
 
         let deleteButton = document.createElement("button");
         deleteButton.innerText = "Eliminar";
         deleteButton.className = "deleteButton";
         deleteButton.onclick = function () {
-            tasks = tasks.filter(function (text) {
-                return text !== taskText;
-            });
-            getTasks();
-            renderTasks();
+            // Preguntar al usuario antes de eliminar
+            if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
+                tasks = tasks.filter(function (text) {
+                    return text !== taskText;
+                });
+                getTasks();
+                renderTasks();
+            }
         };
 
-        listItem.appendChild(deleteButton);
+        buttonContainer.appendChild(editButton);
+        buttonContainer.appendChild(deleteButton);
+
+        listItem.appendChild(buttonContainer);
         taskList.appendChild(listItem);
     });
 }
+
+function startEditTask(index) {
+    // Crear un input para editar
+    let editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.value = tasks[index];
+
+    // Crear botones de confirmar y cancelar
+    let confirmButton = document.createElement("button");
+    confirmButton.innerText = "Confirmar";
+    confirmButton.onclick = function () {
+        finishEditTask(index, editInput.value);
+    };
+
+    let cancelButton = document.createElement("button");
+    cancelButton.innerText = "Cancelar";
+    cancelButton.onclick = function () {
+        renderTasks(); // Volver a renderizar sin cambios
+    };
+
+    // Reemplazar el texto con el input y botones
+    let listItem = taskList.children[index];
+    listItem.innerHTML = "";
+    listItem.appendChild(editInput);
+    listItem.appendChild(confirmButton);
+    listItem.appendChild(cancelButton);
+}
+
+function finishEditTask(index, newText) {
+    // Verificar si se ingresó un nuevo texto y actualizar la tarea
+    if (newText.trim() !== "") {
+        tasks[index] = newText.trim();
+        getTasks();
+        renderTasks();
+    }
+}
+
 
 function addTaskOnEnter(event) {
     if (event.key === "Enter") {
@@ -97,17 +150,16 @@ document.addEventListener("DOMContentLoaded", function () {
     // Manejar el envío del formulario para agregar tareas.
     taskForm.addEventListener("submit", function (e) {
         e.preventDefault();
-
+    
         const taskNameInput = document.getElementById("taskInput");
         // Obtener el nombre de la tarea del campo de entrada.
         const taskName = taskNameInput.value;
-        
+    
         if (taskName === "") {
-            alert("Tu tarea a sido agregada con exito :) .");
-
+            showMessage("Tu tarea ha sido agregada con éxito :)");
             return;
         }
-
+    
         fetch("/ss/mcortes21/guardarensesion.php", {
             method: "POST",
             headers: {
@@ -117,11 +169,26 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then((response) => response.json())
             .then((data) => {
-                alert(data.message);
+                showMessage(data.message);
                 taskNameInput.value = "";
                 loadTasks(); // Vuelve a cargar la lista de tareas después de agregar una nueva tarea.
             });
     });
+    
+    function showMessage(message) {
+        // Crear un elemento de mensaje
+        const messageElement = document.createElement("div");
+        messageElement.textContent = message;
+    
+        // Añadir el mensaje al DOM (puedes elegir dónde agregarlo, por ejemplo, al body)
+        document.body.appendChild(messageElement);
+    
+        // Opcional: Eliminar el mensaje después de un tiempo
+        setTimeout(() => {
+            document.body.removeChild(messageElement);
+        }, 2000); // Elimina el mensaje después de 3 segundos (ajusta el tiempo según tus necesidades)
+    }
+    
 
     // Cargar las tareas al cargar la página.
     loadTasks();
