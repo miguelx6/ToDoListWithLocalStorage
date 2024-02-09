@@ -1,261 +1,214 @@
-let taskList = document.getElementById("taskList");
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let task = JSON.parse(sessionStorage.getItem("tasks")) || [];
+$(document).ready(function() {
+    let taskList = $("#taskList");
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+    function renderTasks() {
+        taskList.empty();
+        $.each(tasks, function(index, taskText) {
+            let listItem = $("<li>").text(taskText);
 
-function renderTasks() {
-    taskList.innerHTML = "";
-    tasks.forEach(function (taskText, index) {
-        let listItem = document.createElement("li");
-        listItem.innerText = taskText;
+            let buttonContainer = $("<div>").addClass("buttonContainer");
 
-        let buttonContainer = document.createElement("div");
-        buttonContainer.className = "buttonContainer";
+            let editButton = $("<button>").text("Editar").addClass("editButton").click(function() {
+                startEditTask(index);
+            });
 
-        let editButton = document.createElement("button");
-        editButton.innerText = "Editar";
-        editButton.className = "editButton";
-        editButton.onclick = function () {
-            startEditTask(index);
-        };
+            let deleteButton = $("<button>").text("Eliminar").addClass("deleteButton").click(function() {
+                if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
+                    tasks = tasks.filter(function(text) {
+                        return text !== taskText;
+                    });
+                    getTasks();
+                    renderTasks();
+                }
+            });
 
-        let deleteButton = document.createElement("button");
-        deleteButton.innerText = "Eliminar";
-        deleteButton.className = "deleteButton";
-        deleteButton.onclick = function () {
-            // Preguntar al usuario antes de eliminar
-            if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
-                tasks = tasks.filter(function (text) {
-                    return text !== taskText;
-                });
-                getTasks();
-                renderTasks();
-            }
-        };
-
-        buttonContainer.appendChild(editButton);
-        buttonContainer.appendChild(deleteButton);
-
-        listItem.appendChild(buttonContainer);
-        taskList.appendChild(listItem);
-    });
-}
-
-function startEditTask(index) {
-    // Crear un input para editar
-    let editInput = document.createElement("input");
-    editInput.type = "text";
-    editInput.value = tasks[index];
-
-    // Crear botones de confirmar y cancelar
-    let confirmButton = document.createElement("button");
-    confirmButton.innerText = "Confirmar";
-    confirmButton.onclick = function () {
-        finishEditTask(index, editInput.value);
-    };
-
-    let cancelButton = document.createElement("button");
-    cancelButton.innerText = "Cancelar";
-    cancelButton.onclick = function () {
-        renderTasks(); // Volver a renderizar sin cambios
-    };
-
-    // Reemplazar el texto con el input y botones
-    let listItem = taskList.children[index];
-    listItem.innerHTML = "";
-    listItem.appendChild(editInput);
-    listItem.appendChild(confirmButton);
-    listItem.appendChild(cancelButton);
-}
-
-function finishEditTask(index, newText) {
-    // Verificar si se ingresó un nuevo texto y actualizar la tarea
-    if (newText.trim() !== "") {
-        tasks[index] = newText.trim();
-        getTasks();
-        renderTasks();
-    }
-}
-
-
-function addTaskOnEnter(event) {
-    if (event.key === "Enter") {
-        addTask();
-    }
-}
-
-function addTask() {
-    let taskInput = document.getElementById("taskInput");
-
-    if (taskInput.value.trim() !== "") {
-        tasks.push(taskInput.value.trim());
-        getTasks();
-        renderTasks();
-
-        taskInput.value = "";
-    }
-}
-
-function getTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    sessionStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-let addButton = document.getElementById("addButton");
-addButton.onclick = addTask;
-renderTasks();
-
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/ss/mcortes21/pwabuilder-sw.js')
-        .then(function (registration) {
-            console.log('Service Worker registrado con éxito:', registration);
-        })
-        .catch(function (error) {
-            console.error('Error al registrar el Service Worker:', error);
+            buttonContainer.append(editButton, deleteButton);
+            listItem.append(buttonContainer);
+            taskList.append(listItem);
         });
-}
-
-
-//Guardar en la sesión
-let dato = localStorage.getItem("dato");  // Obtener el dato de la sesión
-sessionStorage.setItem("task", dato);
-sessionStorage.getItem("task", dato);
-
-
-
-let xhr = new XMLHttpRequest();
-xhr.open("POST", "conexion.php", true);  
-xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded" );
-xhr.send("dato=" + dato);
-
-document.addEventListener("DOMContentLoaded", function () {
-    const taskForm = document.getElementById("taskForm");
-    const taskList = document.getElementById("taskList");
-
-    // Función para cargar las tareas desde el servidor.
-    function loadTasks() {
-        fetch("/ss/mcortes21/conexion.php", {
-            credentials: "include"
-        })  
-            .then((response) => response.json())
-            .then((tasks) =>{
-                taskList.innerHTML = ""; // Limpia la lista actual de tareas
-                tasks.forEach((task) => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = task;  
-                    taskList.appendChild(listItem);
-                });
-            });
     }
-    // Manejar el envío del formulario para agregar tareas.
-    taskForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-    
-        const taskNameInput = document.getElementById("taskInput");
-        // Obtener el nombre de la tarea del campo de entrada.
-        const taskName = taskNameInput.value;
-    
-        if (taskName === "") {
-            showMessage("Tu tarea ha sido agregada con éxito :)");
-            return;
+
+    function startEditTask(index) {
+        let editInput = $("<input>").attr("type", "text").val(tasks[index]);
+
+        let confirmButton = $("<button>").text("Confirmar").click(function() {
+            finishEditTask(index, editInput.val());
+        });
+
+        let cancelButton = $("<button>").text("Cancelar").click(function() {
+            renderTasks();
+        });
+
+        let listItem = taskList.children().eq(index);
+        listItem.empty().append(editInput, confirmButton, cancelButton);
+    }
+
+    function finishEditTask(index, newText) {
+        if (newText.trim() !== "") {
+            tasks[index] = newText.trim();
+            getTasks();
+            renderTasks();
         }
-    
-        fetch("/ss/mcortes21/guardarensesion.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ task_name: taskName })
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                showMessage(data.message);
-                taskNameInput.value = "";
-                loadTasks(); // Vuelve a cargar la lista de tareas después de agregar una nueva tarea.
+    }
+
+    function addTaskOnEnter(event) {
+        if (event.key === "Enter") {
+            addTask();
+        }
+    }
+
+    function addTask() {
+        let taskInput = $("#taskInput");
+
+        if (taskInput.val().trim() !== "") {
+            tasks.push(taskInput.val().trim());
+            getTasks();
+            renderTasks();
+
+            taskInput.val("");
+        }
+    }
+
+    function getTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    $("#addButton").click(addTask);
+    renderTasks();
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/ss/mcortes21/pwabuilder-sw.js')
+            .then(function(registration) {
+                console.log('Service Worker registrado con éxito:', registration);
+            })
+            .catch(function(error) {
+                console.error('Error al registrar el Service Worker:', error);
             });
-    });
-    
-    function showMessage(message) {
-        // Crear un elemento de mensaje
-        const messageElement = document.createElement("div");
-        messageElement.textContent = message;
-    
-        // Añadir el mensaje al DOM (puedes elegir dónde agregarlo, por ejemplo, al body)
-        document.body.appendChild(messageElement);
-    
-        // Opcional: Eliminar el mensaje después de un tiempo
-        setTimeout(() => {
-            document.body.removeChild(messageElement);
-        }, 2000); // Elimina el mensaje después de 3 segundos (ajusta el tiempo según tus necesidades)
     }
-    
 
-    // Cargar las tareas al cargar la página.
-    loadTasks();
+    let dato = localStorage.getItem("dato");
+    sessionStorage.setItem("task", dato);
+    sessionStorage.getItem("task", dato);
 
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "conexion.php", true);
+    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
+    xhr.send("dato=" + dato);
+
+    $(document).on("DOMContentLoaded", function() {
+        const taskForm = $("#taskForm");
+        const taskList = $("#taskList");
+
+        function loadTasks() {
+            $.ajax({
+                url: "/ss/mcortes21/conexion.php",
+                method: "GET",
+                dataType: "json",
+                success: function(tasks) {
+                    taskList.empty();
+                    $.each(tasks, function(index, task) {
+                        const listItem = $("<li>").text(task);
+                        taskList.append(listItem);
+                    });
+                }
+            });
+        }
+
+        taskForm.submit(function(e) {
+            e.preventDefault();
+
+            const taskNameInput = $("#taskInput");
+            const taskName = taskNameInput.val();
+
+            if (taskName === "") {
+                showMessage("Tu tarea ha sido agregada con éxito :)");
+                return;
+            }
+
+            $.ajax({
+                url: "/ss/mcortes21/guardarensesion.php",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ task_name: taskName }),
+                success: function(data) {
+                    showMessage(data.message);
+                    taskNameInput.val("");
+                    loadTasks();
+                }
+            });
+        });
+
+        function showMessage(message) {
+            const messageElement = $("<div>").text(message);
+            $("body").append(messageElement);
+
+            setTimeout(function() {
+                messageElement.remove();
+            }, 2000);
+        }
+
+        loadTasks();
+    });
+
+    const formularioTarea = $("#taskForm");
+    formularioTarea.submit(function(event) {
+        event.preventDefault();
+
+        const tarea = $("#taskInput").val();
+        const fecha = $("#fecha").val();
+
+        const newtask = {
+            task: tarea,
+            fecha: fecha
+        };
+
+        $.ajax({
+            url: "https://sistemas.cruzperez.com/ss/mcortes21/",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(newtask),
+            success: function(data) {
+                alert(data.message);
+                formularioTarea[0].reset();
+            },
+            error: function(error) {
+                console.error(error);
+            }
+        });
+    });
+
+    function transferData() {
+        const localStorageTasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        sessionStorage.setItem("tasks", JSON.stringify(localStorageTasks));
+    }
+
+    transferData();
+
+    const form = $("#form");
+    const username = $("#username");
+    const password = $("#password");
+
+    form.submit(function(event) {
+        event.preventDefault();
+
+        const newtask = {
+            username: username.val(),
+            password: password.val()
+        };
+
+        $.ajax({
+            url: "https://sistemas.cruzperez.com/ss/mcortes21/",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(newtask),
+            success: function(data) {
+                alert(data.message);
+                form[0].reset();
+            },
+            error: function(error) {
+                console.error(error);
+            }
+        });
+    });
 });
-
-const formularioTarea = document.getElementById("taskForm");
-formularioTarea.addEventListener("submit", function (event) { 
-    event.preventDefault();
-
-    const tarea = document.getElementById("taskInput").value;
-    const fecha = document.getElementById("fecha").value;
-
-    const newtask = { 
-        task: tarea,
-        fecha: fecha
-    };
-
-    fetch("https://sistemas.cruzperez.com/ss/mcortes21/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newtask)
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            alert(data.message);
-            formularioTarea.reset();
-    })
-        .catch((error) => console.error(error));
-    });
-
-    // Función para transferir datos de localStorage a sessionStorage
-function transferData() {
-    const localStorageTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    sessionStorage.setItem("tasks", JSON.stringify(localStorageTasks));
-}
-
-// Llama a la función de transferencia cuando lo necesites, por ejemplo, al cargar la página.
-transferData();
-
-//FUNCION PARA INICIO DE SESION EN LA PWA CON AUTENTIFICACION de licencia desde el servidor
-const form = document.getElementById("form");
-const username = document.getElementById("username");
-const password = document.getElementById("password");
-
-form.addEventListener("submit", function (event) { 
-    event.preventDefault();
-
-    const newtask = { 
-        username: username.value,
-        password: password.value
-    };
-
-    fetch("https://sistemas.cruzperez.com/ss/mcortes21/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newtask)
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            alert(data.message);
-            form.reset();
-    })
-        .catch((error) => console.error(error));
-    }
-);
