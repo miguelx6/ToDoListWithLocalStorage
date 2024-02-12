@@ -138,14 +138,6 @@ $(document).ready(function() {
                         const listItem = $("<li>").text(task);
                         taskList.append(listItem);
                     });
-
-                    // Llama a showMessage después de cargar las tareas
-                    showMessage("Tareas cargadas con éxito.");
-                },
-                error: function(error) {
-                    console.error(error);
-                    // Llama a showMessage con un mensaje de error
-                    showMessage("Error al cargar las tareas.");
                 }
             });
         }
@@ -162,18 +154,7 @@ $(document).ready(function() {
                     loadTasks();
                 }
             });
-        });
-
-        function showMessage(message) {
-            const messageElement = $("<div>").text(message);
-            $("body").append(messageElement);
-
-            setTimeout(function() {
-                messageElement.remove();
-            }, 2000);
-        }
-
-        loadTasks();
+        
     });
 
     const formularioTarea = $("#taskForm");
@@ -236,6 +217,7 @@ $(document).ready(function() {
             }
         });
     });
+});
 });
 
 
