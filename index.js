@@ -1,82 +1,114 @@
 $(document).ready(function() {
-    let taskList = $("#taskList");
+    const taskList = $("#taskList");
+    const taskInput = $("#taskInput");
+    const addButton = $("#addButton");
+    const taskForm = $("#taskForm");
+
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
     function renderTasks() {
         taskList.empty();
-        $.each(tasks, function(index, taskText) {
-            let listItem = $("<li>").text(taskText);
-
-            let buttonContainer = $("<div>").addClass("buttonContainer");
-
-            let editButton = $("<button>").text("Editar").addClass("editButton").click(function() {
+        tasks.forEach(function(taskText, index) {
+            const listItem = $("<li>").text(taskText);
+            const buttonContainer = $("<div>").addClass("buttonContainer");
+            const doneButton = $("<button>").text("Hecho").addClass("doneButton").click(function() {
+                completeTask(index);
+            });
+            const editButton = $("<button>").text("Editar").addClass("editButton").click(function() {
                 startEditTask(index);
             });
-
-            let deleteButton = $("<button>").text("Eliminar").addClass("deleteButton").click(function() {
-                if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
-                    tasks = tasks.filter(function(text) {
-                        return text !== taskText;
-                    });
-                    getTasks();
-                    renderTasks();
-                }
+            const deleteButton = $("<button>").text("Eliminar").addClass("deleteButton").click(function() {
+                deleteTask(index);
             });
-
-            buttonContainer.append(editButton, deleteButton);
+            buttonContainer.append(editButton, doneButton, deleteButton);
             listItem.append(buttonContainer);
             taskList.append(listItem);
         });
     }
 
-    function startEditTask(index) {
-        let editInput = $("<input>").attr("type", "text").val(tasks[index]);
+    function completeTask(index) {
+        const listItem = taskList.children().eq(index);
+        listItem.toggleClass("done");
+        if (listItem.hasClass("done")) {
+            showMessage("¡Tarea completada!");
+            setTimeout(function() {
+                tasks.splice(index, 1);
+                updateTasks();
+                renderTasks();
+            }, 2000);
+        }
+    }
 
-        let confirmButton = $("<button>").text("Confirmar").click(function() {
+    function startEditTask(index) {
+        const editInput = $("<input>").attr("type", "text").val(tasks[index]);
+        const confirmButton = $("<button>").text("Confirmar").click(function() {
             finishEditTask(index, editInput.val());
         });
-
-        let cancelButton = $("<button>").text("Cancelar").click(function() {
+        const cancelButton = $("<button>").text("Cancelar").click(function() {
             renderTasks();
         });
-
-        let listItem = taskList.children().eq(index);
+        const listItem = taskList.children().eq(index);
         listItem.empty().append(editInput, confirmButton, cancelButton);
     }
 
     function finishEditTask(index, newText) {
         if (newText.trim() !== "") {
             tasks[index] = newText.trim();
-            getTasks();
+            updateTasks();
             renderTasks();
         }
     }
 
-    function addTaskOnEnter(event) {
-        if (event.key === "Enter") {
-            addTask();
+    function deleteTask(index) {
+        if (confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
+            tasks.splice(index, 1);
+            updateTasks();
+            renderTasks();
         }
     }
 
     function addTask() {
-        let taskInput = $("#taskInput");
-
-        if (taskInput.val().trim() !== "") {
-            tasks.push(taskInput.val().trim());
-            getTasks();
+        const taskText = taskInput.val().trim();
+        if (taskText !== "") {
+            tasks.push(taskText);
+            updateTasks();
             renderTasks();
-
             taskInput.val("");
         }
     }
 
-    function getTasks() {
+    function updateTasks() {
         localStorage.setItem("tasks", JSON.stringify(tasks));
     }
 
-    $("#addButton").click(addTask);
+    function showMessage(message) {
+        const messageElement = $("<div>").text(message);
+        $("body").append(messageElement);
+        setTimeout(function() {
+            messageElement.remove();
+        }, 2000);
+    }
+
+    addButton.click(addTask);
+    taskForm.submit(function(e) {
+        e.preventDefault();
+        addTask();
+    });
+
+    taskForm.submit(function(e) {
+        e.preventDefault();
+
+        const taskNameInput = $("#taskInput");
+        const taskName = taskNameInput.val();
+
+        if (taskName === "") {
+            showMessage("Tu tarea ha sido agregada con éxito :)");
+            return;
+        }
+
     renderTasks();
 
+    // Registro de Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/ss/mcortes21/pwabuilder-sw.js')
             .then(function(registration) {
@@ -90,11 +122,6 @@ $(document).ready(function() {
     let dato = localStorage.getItem("dato");
     sessionStorage.setItem("task", dato);
     sessionStorage.getItem("task", dato);
-
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "conexion.php", true);
-    xhr.setRequestHeader("content-type", "application/x-www-form-urlencoded");
-    xhr.send("dato=" + dato);
 
     $(document).on("DOMContentLoaded", function() {
         const taskForm = $("#taskForm");
@@ -111,20 +138,18 @@ $(document).ready(function() {
                         const listItem = $("<li>").text(task);
                         taskList.append(listItem);
                     });
+
+                    // Llama a showMessage después de cargar las tareas
+                    showMessage("Tareas cargadas con éxito.");
+                },
+                error: function(error) {
+                    console.error(error);
+                    // Llama a showMessage con un mensaje de error
+                    showMessage("Error al cargar las tareas.");
                 }
             });
         }
 
-        taskForm.submit(function(e) {
-            e.preventDefault();
-
-            const taskNameInput = $("#taskInput");
-            const taskName = taskNameInput.val();
-
-            if (taskName === "") {
-                showMessage("Tu tarea ha sido agregada con éxito :)");
-                return;
-            }
 
             $.ajax({
                 url: "/ss/mcortes21/guardarensesion.php",
@@ -212,3 +237,5 @@ $(document).ready(function() {
         });
     });
 });
+
+

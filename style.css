@@ -52,12 +52,27 @@ li {
     border: none;
 }
 
+button.doneButton {
+    background-color: #429742;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
 button.deleteButton {
     background-color: #ff3333;
     color: #fff;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+}
+
+
+#taskList li .buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 
